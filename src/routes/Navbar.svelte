@@ -13,11 +13,6 @@
     <div class="flex-1 flex items-center">
         <h1><a href="/">Marianopolis Mentorship Program</a></h1>
     </div>
-    <div class="flex-1 flex flex-row items-center">
-        <div class="hover:bg-gray-100 p-2 rounded-lg">
-            <a href="/admin">Admin Home</a>
-        </div>
-    </div>
     <div class=" flex flex-row items-center">
         {#if currentUser}
             {#if currentUser?.photoURL}

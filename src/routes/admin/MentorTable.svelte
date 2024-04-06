@@ -2,8 +2,7 @@
     import { goto } from '$app/navigation'
     import { Button } from '@/components/ui/button'
     import * as Table from '@/components/ui/table'
-    export let mentorsData: any[] = []
-
+    export let mentorsData: any
     let listOfMentors: {
         email: string
         mentees: string[]
@@ -39,12 +38,14 @@
             </Table.Row>
         </Table.Header>
         <Table.Body>
-            {#each listOfMentors as mentor}
+            {#each mentorsData as mentor}
                 <Table.Row>
                     <Table.Cell>{mentor.name}</Table.Cell>
                     <Table.Cell>{mentor.email}</Table.Cell>
                     <Table.Cell>
-                        {#if mentor.mentees.length > 1}
+                        {#if !mentor.mentees}
+                            No Mentees
+                        {:else if mentor.mentees.length > 1}
                             {mentor.mentees[0]}, ...
                         {:else if mentor.mentees.length === 1}
                             {mentor.mentees[0]}
