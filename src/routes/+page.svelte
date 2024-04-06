@@ -1,12 +1,4 @@
 <script lang="ts">
-<<<<<<< HEAD
-    import type { PageData } from './$types'
-
-    export let data: PageData
-</script>
-
-<h1 class="text-6xl">some title</h1>
-=======
     let status: string = 'employed'
 </script>
 
@@ -34,4 +26,3 @@
         </div>
     </div>
 </div>
->>>>>>> 4681b48a6df0e7e098f175768e771533b5f75163

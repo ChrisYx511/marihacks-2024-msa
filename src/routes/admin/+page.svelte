@@ -2,11 +2,8 @@
     import MentorTable from './MentorTable.svelte'
     import type { PageData } from './$types'
     import { onMount } from 'svelte'
-    let data: PageData
-    let mentorsData: any
-    onMount(() => {
-        mentorsData = data.mentorsData
-    })
+    import { Button } from '@/components/ui/button'
+    export let data: PageData
 </script>
 
 <div class="grid grid-cols-2 gap-4 m-12">
@@ -16,13 +13,9 @@
         </h1>
         <div class="p-5 max-w-full bg-blue-100 rounded-lg"></div>
     </div>
-    <div
-        class="bg-gradient-to-r from-cyan-500 to-blue-700 p-5 px-1 max-w-2xl ml-20 rounded-lg text-white font-serif text-xl"
-    >
-        2 hours completed
-    </div>
 </div>
 <div class="grid grid-cols-6 gap-4"></div>
-{#if mentorsData}
-    <MentorTable {mentorsData}></MentorTable>
+{#if data.mentorsData}
+    <Button>Auto-Pair</Button>
+    <MentorTable mentorsData={data.mentorsData}></MentorTable>
 {/if}
