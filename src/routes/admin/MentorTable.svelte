@@ -2,6 +2,8 @@
     import { goto } from '$app/navigation'
     import { Button } from '@/components/ui/button'
     import * as Table from '@/components/ui/table'
+    export let mentorsData: any[] = []
+
     let listOfMentors: {
         email: string
         mentees: string[]

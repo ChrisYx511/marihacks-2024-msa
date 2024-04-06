@@ -1,6 +1,12 @@
 <script lang="ts">
-    import * as Table from '$lib/components/ui/table'
     import MentorTable from './MentorTable.svelte'
+    import type { PageData } from './$types'
+    import { onMount } from 'svelte'
+    let data: PageData
+    let mentorsData: any
+    onMount(() => {
+        mentorsData = data.mentorsData
+    })
 </script>
 
 <div class="grid grid-cols-2 gap-4 m-12">
@@ -15,4 +21,6 @@
     </div>
 </div>
 <div class="grid grid-cols-6 gap-4"></div>
-<MentorTable></MentorTable>
+{#if mentorsData}
+    <MentorTable {mentorsData}></MentorTable>
+{/if}

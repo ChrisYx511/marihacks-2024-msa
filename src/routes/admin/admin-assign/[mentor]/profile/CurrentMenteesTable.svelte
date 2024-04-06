@@ -19,7 +19,7 @@
                 <Table.Cell>{mentee}</Table.Cell>
                 <Table.Cell>Placeholder</Table.Cell>
                 <Table.Cell>
-                    <Button class="bg-red-700">Delete</Button>
+                    <Button class="bg-red-700 hover:bg-red-900">Delete</Button>
                 </Table.Cell>
             </Table.Row>
         {/each}
