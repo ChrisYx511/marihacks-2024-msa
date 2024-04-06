@@ -12,12 +12,13 @@
             Mentor progress
         </h1>
         <div class="p-5 max-w-full bg-blue-100 rounded-lg"></div>
+        <!-- </div> -->
     </div>
+    <div class="grid grid-cols-6 gap-4"></div>
 </div>
-<div class="grid grid-cols-6 gap-4"></div>
 {#if data.mentorsData}
-    <form method="POST">
-        <Button type="submit">Auto-Pair</Button>
-    </form>
     <MentorTable mentorsData={data.mentorsData}></MentorTable>
 {/if}
+<form method="POST">
+    <Button type="submit">Auto-Pair</Button>
+</form>

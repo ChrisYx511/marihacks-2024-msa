@@ -10,7 +10,8 @@ import {
     setDoc,
     doc,
     CollectionReference,
-    DocumentReference
+    DocumentReference,
+    updateDoc
 } from 'firebase/firestore'
 import openai from '$lib/openai.server'
 
@@ -66,7 +67,7 @@ async function evalAI(mentees: any, mentors: any, questions: any) {
     return { queries: queries, mentees: mentees, mentors: mentors, pairing: pairing }
 }
 
-function heuristic(mentees: any, mentors: any, pairing: any) {
+async function heuristic(mentees: any, mentors: any, pairing: any) {
     // Horrible but low on time and idk javascript
     const menteesArr: any[] = []
     mentees.forEach((m) => {
@@ -120,35 +121,80 @@ function heuristic(mentees: any, mentors: any, pairing: any) {
         }
     }
     console.log(bestPairing)
+    return await bestPairing
 }
 
 export const actions = {
     default: async (event): Promise<void> => {
+        console.log('asoidjaosidjsaoij')
         getdbs().then((result1) => {
-            evalAI(result1['mentees'], result1['mentors'], result1['questions']).then((result2) => {
+            console.log('reached Z')
+            /*evalAI(result1['mentees'], result1['mentors'], result1['questions']).then((result2) => {
                 callAIs(
                     result2['queries'],
                     result2['pairing'],
                     'TODO',
                     result2['mentees'],
                     result2['mentors']
-                ).then((result3) => {
-                    heuristic(result3['mentees'], result3['mentors'], result3['pairing'])
-                }) /*
-                let json = {
-                    'chrisyx511@gmail.com:chrisyx511@gmail.com': 2,
-                    '123@example.com:chrisyx511@gmail.com': 19,
-                    '456@example.com:chrisyx511@gmail.com': 6,
-                    'chrisyx511@gmail.com:justin.bax@icloud.com': 15,
-                    '123@example.com:justin.bax@icloud.com': 12,
-                    '456@example.com:justin.bax@icloud.com': 13
-                }
-                */
-                //heuristic(result['mentees'], result['mentors'], json)
-            })
-        })
+                ).then((result3) => {*/
+            let json = {
+                'chrisyx511@gmail.com:chrisyx511@gmail.com': 2,
+                '123@example.com:chrisyx511@gmail.com': 19,
+                '456@example.com:chrisyx511@gmail.com': 6,
+                'chrisyx511@gmail.com:justin.bax@icloud.com': 15,
+                '123@example.com:justin.bax@icloud.com': 12,
+                '456@example.com:justin.bax@icloud.com': 13
+            }
+            console.log('reached A')
+            heuristic(result1['mentees'], result1['mentors'], json).then(async (best) => {
+                console.log('reached B')
+                console.log(best)
+                const menteesCollection = await collection(db, 'mentees')
+                const mentorsCollection = await collection(db, 'mentors')
 
-        const mentees: QuerySnapshot = await getDocs(collection(db, 'mentees'))
-        const mentors: QuerySnapshot = await getDocs(collection(db, 'mentors'))
+                for (let key: any of Object.entries(best)) {
+                    let mentorEmail = key[0]
+                    let menteeEmail = key[1]
+                    console.log('key', key)
+                    console.log('key[1', key[0])
+                    console.log('best[2', key[1])
+
+                    const menteeQuery: Query = query(
+                        menteesCollection,
+                        where('email', '==', menteeEmail)
+                    )
+                    let menteeId: any = 0
+                    await getDocs(menteeQuery).then((result) => {
+                        menteeId = result.docs[0].id
+                    })
+                    let menteeRef = doc(db, 'mentees', menteeId)
+                    console.log('mentee', menteeId)
+
+                    const mentorQuery: Query = query(
+                        mentorsCollection,
+                        where('email', '==', mentorEmail)
+                    )
+                    let mentorId: any = 0
+                    await getDocs(mentorQuery).then((result) => {
+                        mentorId = result.docs[0].id
+                    })
+                    let mentorRef = doc(db, 'mentors', mentorId)
+                    console.log('mentor', mentorId)
+
+                    updateDoc(menteeRef, {
+                        mentor: mentorEmail
+                    })
+
+                    updateDoc(mentorRef, {
+                        mentees: [menteeEmail]
+                    })
+                }
+            })
+        }) /*
+                
+                */
+        //heuristic(result['mentees'], result['mentors'], json)
+        //})
+        //})
     }
 } satisfies Actions
