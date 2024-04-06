@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { goto } from '$app/navigation'
     let status: string = 'employed'
 </script>
 
@@ -15,11 +16,12 @@
         <div class={'grid grid-cols-2 gap-32 mt-10 m-auto'}>
             <button
                 class=" bg-green-600 rounded-md p-5 hover:bg-green-600 hover:border-white hover:text-amber-300"
-                >Sign up as a mentee</button
+                on:click={() => goto('/mentee/submit')}>Sign up as a mentee</button
             >
 
             <button
                 class={'border-solid border-2 border-green-600 rounded-md p-5 hover:bg-green-600 hover:border-white hover:text-amber-300'}
+                on:click={() => goto('/mentor/submit')}
             >
                 Sign up as a mentor
             </button>
