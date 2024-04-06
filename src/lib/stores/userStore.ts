@@ -10,8 +10,10 @@ import { goto } from '$app/navigation'
 
 class AuthStore {
     user: User | null
+    role?: 'none' | 'mentee' | 'mentor' | 'admin'
     constructor() {
         this.user = null
+        this.role = 'none'
     }
 }
 

@@ -14,13 +14,15 @@
             if (!user) {
                 authStore.update(() => {
                     return {
-                        user: null
+                        user: null,
+                        role: 'none'
                     }
                 })
             } else {
                 authStore.update(() => {
                     return {
-                        user: user
+                        user: user,
+                        role: 'none'
                     }
                 })
             }
