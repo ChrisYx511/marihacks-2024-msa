@@ -138,12 +138,15 @@ export const actions = {
                     result2['mentors']
                 ).then((result3) => {*/
             let json = {
-                'chrisyx511@gmail.com:chrisyx511@gmail.com': 2,
-                '123@example.com:chrisyx511@gmail.com': 19,
-                '456@example.com:chrisyx511@gmail.com': 6,
-                'chrisyx511@gmail.com:justin.bax@icloud.com': 15,
-                '123@example.com:justin.bax@icloud.com': 12,
-                '456@example.com:justin.bax@icloud.com': 13
+                'johnsmith@domain.com:chrisyx511@gmail.com': 2,
+                'marianostudent@mari.com:chrisyx511@gmail.com': 19,
+                'bill.gates@gmail.com:chrisyx511@gmail.com': 6,
+                'marianostudent@mari.com:justin.bax@icloud.com': 15,
+                'johnsmith@domain.com:justin.bax@icloud.com': 12,
+                'bill.gates@gmail.com:justin.bax@icloud.com': 13,
+                'marianostudent@mari.com:bobby12@yahoo.com': 7,
+                'johnsmith@domain.com:bobby12@yahoo.com': 10,
+                'bill.gates@gmail.com:bobby12@yahoo.com': 18
             }
             console.log('reached A')
             heuristic(result1['mentees'], result1['mentors'], json).then(async (best) => {
