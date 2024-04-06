@@ -6,26 +6,27 @@
     let password: string = ''
 </script>
 
-<form>
+<form class={'m-2'}>
     <label>
         Email <br />
         <input
-            class={'border-2 border-solid border-black'}
+            class={'border-2 border-solid border-black rounded-lg'}
             name="email"
             type="email"
             bind:value={email}
         />
-    </label>
+    </label><br />
     <label>
         Password <br />
         <input
-            class={'border-2 border-solid border-black'}
+            class={'border-2 border-solid border-black rounded-lg'}
             name="password"
             type="password"
             bind:value={password}
         />
-    </label>
-    <button on:click={() => authHandlers.createUserWithEmail(email, password)}
-        >Create Account</button
+    </label> <br />
+    <button
+        class="border-black border-solid border-2 p-4 rounded-lg"
+        on:click={() => authHandlers.createUserWithEmail(email, password)}>Create Account</button
     >
 </form>

@@ -3,7 +3,8 @@ import { writable, type Writable } from 'svelte/store'
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    type User
+    type User,
+    type UserCredential
 } from 'firebase/auth'
 import { goto } from '$app/navigation'
 
