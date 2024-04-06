@@ -16,6 +16,8 @@
 </div>
 <div class="grid grid-cols-6 gap-4"></div>
 {#if data.mentorsData}
-    <Button>Auto-Pair</Button>
+    <form method="POST">
+        <Button type="submit">Auto-Pair</Button>
+    </form>
     <MentorTable mentorsData={data.mentorsData}></MentorTable>
 {/if}
