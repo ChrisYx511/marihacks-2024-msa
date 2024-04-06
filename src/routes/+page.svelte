@@ -2,8 +2,6 @@
     let status: string = 'employed'
 </script>
 
-{#if status === 'unemployed'}
-    <div class={'size-20 '}>you are unemployed</div>
-{:else}
-    <div class={'size-20 '}>you are employed</div>
-{/if}
+<img src="/students01.jpg" alt="students-bg" class={'fixed -z-10'} />
+
+<div class={'w-max h-96 bg-white'}></div>
