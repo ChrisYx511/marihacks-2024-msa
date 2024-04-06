@@ -12,7 +12,7 @@
 </script>
 
 <div class={'m-2'}>
-    <form>
+    <form class="grid gap-2">
         <label>
             Email <br />
             <input
@@ -30,13 +30,13 @@
                 type="password"
                 bind:value={password}
             />
-        </label>
+        </label><br />
         <button
-            class=" border-black border-solid border-2 p-4 rounded-lg"
+            class=" border-black border-solid border-2 p-2 rounded-lg"
             on:click={() => authHandlers.loginWithEmail(email, password)}>Log in</button
         >
         <button
-            class={'border-black border-solid border-2 p-4 rounded-lg'}
+            class={'border-black border-solid border-2 p-2 rounded-lg'}
             on:click={() => {
                 console.log(currentUser)
             }}
