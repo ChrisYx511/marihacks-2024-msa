@@ -1,20 +1,27 @@
 <script lang="ts">
-	import type { PageData } from './$types';
-	
-	export let data: PageData;
+    import type { PageData } from './$types'
+
+    export let data: PageData
 </script>
 
-<h1 class="text-6xl">{data.questions.length}</h1>
-<div>if you see this ur gay</div>
-
 <form method="POST">
-	<label>
-		something
-		<input name="a" type="text">
-	</label>
-	<label>
-		something else
-		<input name="b" type="text">
-	</label>
-	<button>Submit</button>
+    <div class={'flex'}>
+        <div class="m-auto">
+            {#each data.questions as question}
+                <label>
+                    <div>
+                        <div>
+                            {question.get('question')}
+                        </div>
+                        <input
+                            name={question.get('order')}
+                            type="text"
+                            class={'border-solid border-2 rounded-md'}
+                        />
+                    </div>
+                </label>
+            {/each}
+            <button>Submit</button>
+        </div>
+    </div>
 </form>
