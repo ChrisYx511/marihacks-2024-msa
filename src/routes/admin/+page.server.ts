@@ -108,7 +108,7 @@ function heuristic(mentees: any, mentors: any, pairing: any) {
                     // Choose this one
                     currentScore += mentorsSorted[m][r][0]
                     //console.log('mentorsSorted ', mentorsSorted[m][r])
-                    currentPairing[r] = m
+                    currentPairing[mentorsArr[r]['email']] = menteesArr[m]['email']
                     break
                 }
             }
@@ -124,16 +124,16 @@ function heuristic(mentees: any, mentors: any, pairing: any) {
 
 export const actions = {
     default: async (event): Promise<void> => {
-        getdbs().then((result) => {
-            evalAI(result['mentees'], result['mentors'], result['questions']).then((result) => {
+        getdbs().then((result1) => {
+            evalAI(result1['mentees'], result1['mentors'], result1['questions']).then((result2) => {
                 callAIs(
-                    result['queries'],
-                    result['pairing'],
+                    result2['queries'],
+                    result2['pairing'],
                     'TODO',
-                    result['mentees'],
-                    result['mentors']
-                ).then((result) => {
-                    heuristic(result['mentees'], result['mentors'], result['pairing'])
+                    result2['mentees'],
+                    result2['mentors']
+                ).then((result3) => {
+                    heuristic(result3['mentees'], result3['mentors'], result3['pairing'])
                 }) /*
                 let json = {
                     'chrisyx511@gmail.com:chrisyx511@gmail.com': 2,
@@ -147,5 +147,8 @@ export const actions = {
                 //heuristic(result['mentees'], result['mentors'], json)
             })
         })
+
+        const mentees: QuerySnapshot = await getDocs(collection(db, 'mentees'))
+        const mentors: QuerySnapshot = await getDocs(collection(db, 'mentors'))
     }
 } satisfies Actions
