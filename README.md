@@ -1,3 +1,18 @@
+# Crooked Labs - Marianopolis Mentorship Program
+
+Created as part of a submission to Marihacks 2024.
+https://devpost.com/software/crooked-labs-marianopolis-mentorship-program
+
+## The Product
+
+Our software automates the process of pairing mentors and mentees. The choices are based upon multiple factors and in this particular order: Program of study, gender, language, high school, and hobbies. In addition, any other factors can be easily implemented into the system, allowing for a more compatible pairing. It does this automatically using a combination of fixed proportion weighed scores for items such as gender or program and machine learning based heuristics for matching more qualitative traits such as hobbies or preferences.
+
+_The project is a proof-of-concept._
+
+Copyright (C) 2024 Annie Liu, (Chris) Xi Yang, Justin Bax, (Tony) Le Tuan Huy Nguyen
+
+This project is powered by Svelte, SvelteKit. Create-svelte instructions on building are below.
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
