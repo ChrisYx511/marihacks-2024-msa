@@ -23,17 +23,35 @@ async function callAI(prompt: string) {
     })
 }
 
-async function callAIs(prompts: any, pairing: any, docName: string, mentees: any, mentors: any) {
+async function callAIs(prompts: any, docName: string,) {
+    let pairing: any = {}
     for (let p of prompts) {
         const result = await callAI(p[0])
         const score = JSON.parse(result.choices[0].message.content || '')
         pairing[p[1]] = score['c']
         //await setDoc(docRef, score)
     }
-    return { pairing: pairing, mentees: mentees, mentors: mentors }
+    
+    // The following is test data returned by callAI.
+    // Comment the above for loop and uncomment the following to test
+    // without having tomake and wait for API calls to OpenAI every time
+    /*
+    pairing = {
+        'johnsmith@domain.com:justin.bax@icloud.com': 5,
+        'johnsmith@domain.com:bobby12@yahoo.com': 10,
+        'johnsmith@domain.com:chrisyx511@gmail.com': 10,
+        'bill.gates@gmail.com:justin.bax@icloud.com': 10,
+        'bill.gates@gmail.com:bobby12@yahoo.com': 10,
+        'bill.gates@gmail.com:chrisyx511@gmail.com': 10,
+        'marianostudent@mari.com:justin.bax@icloud.com': 5,
+        'marianostudent@mari.com:bobby12@yahoo.com': 10,
+        'marianostudent@mari.com:chrisyx511@gmail.com': 6
+    }
+    */
+    return pairing
 }
 
-async function getdbs() {
+async function getDbData() {
     const mentees: QuerySnapshot = await getDocs(collection(db, 'mentees'))
     const mentors: QuerySnapshot = await getDocs(collection(db, 'mentors'))
     const questions: QuerySnapshot = await getDocs(collection(db, 'questions'))
@@ -45,7 +63,7 @@ async function getdbs() {
     }
 }
 
-async function evalAI(mentees: any, mentors: any, questions: any) {
+async function getQueries(mentees: any, mentors: any, questions: any) {
     let pairing: { [key: string]: number } = {}
     let queries: any[] = []
 
@@ -64,52 +82,52 @@ async function evalAI(mentees: any, mentors: any, questions: any) {
         })
     })
 
-    return { queries: queries, mentees: mentees, mentors: mentors, pairing: pairing }
+    return queries
 }
 
 async function heuristic(mentees: any, mentors: any, pairing: any) {
     // Horrible but low on time and idk javascript
-    const menteesArr: any[] = []
-    mentees.forEach((m) => {
-        menteesArr.push(m)
-    })
-    const mentorsArr: any[] = []
-    mentors.forEach((m) => {
-        mentorsArr.push(m)
-    })
-
+    console.log('pairing', pairing)
     const mentorsSorted: any[] = []
-    menteesArr.forEach((m) => {
+    mentees.forEach((m) => {
         let toAdd: any[] = []
-        mentorsArr.forEach((r) => {
+        mentors.forEach((r) => {
             toAdd.push([pairing[m['email'] + ':' + r['email']], r['email']])
         })
         toAdd.sort((a, b) => {
-            return a[0] - b[0]
+            return b[0] - a[0]
         })
         mentorsSorted.push(toAdd)
     })
+    console.log("sorted: ", mentorsSorted)
 
     let bestPairing: any = { overwrite: true }
     let bestScore = 0
     for (let i: number = 0; i < 1; i++) {
         let currentScore = 0
         let currentPairing: { [key: string]: number } = {}
-        for (let r: number = 0; r < mentorsArr.length; r++) {
-            for (let m: number = 0; m < menteesArr.length; m++) {
-                if (r in currentPairing) {
-                    console.log('continue', r, currentPairing)
+        for (let m: number = 0; m < mentees.length; m++) {
+            console.log("trying mentee", m)
+            for (let r: number = 0; r < mentors.length; r++) {
+                console.log("   trying mentor", r)
+                if (mentors[r]['email'] in currentPairing) {
+                    console.log("   ... already taken.")
                     continue // Mentor is already taken
                 }
-                let prob = Math.exp(mentorsSorted[m][r][0] / 20 - 1)
-                //console.log(m + ' ' + r + ' ==> ' + mentorsSorted[m][r][0])
+                // Probability function: (x/20)^2
+                // Dividing by 20 to normalize a score from [0, 20] to [0, 1]
+                // Squaring so that higher scores are significantly better than lower scores, instead of just slightly better
+                let prob = Math.pow(mentorsSorted[m][r][0] / 20, 2)
                 let rand = Math.random()
-                console.log('rand', rand, 'prob', prob)
-                if (rand > prob || r == mentorsArr.length - 1) {
+                if (rand > prob || r == mentors.length - 1) {
+                    console.log("   choosing this one")
                     // Choose this one
+                    console.log("   currentScore after", currentScore)
                     currentScore += mentorsSorted[m][r][0]
-                    //console.log('mentorsSorted ', mentorsSorted[m][r])
-                    currentPairing[mentorsArr[r]['email']] = menteesArr[m]['email']
+                    console.log("   currentScore after", currentScore)
+                    console.log("   mentor's email:", mentors[r]['email'])
+                    console.log("   mentee's email:", mentees[m]['email'])
+                    currentPairing[mentors[r]['email']] = mentees[m]['email']
                     break
                 }
             }
@@ -117,87 +135,62 @@ async function heuristic(mentees: any, mentors: any, pairing: any) {
         if (currentScore > bestScore || bestPairing['overwrite'] == true) {
             bestPairing = currentPairing
             bestScore = currentScore
-            //console.log('bestScore ', bestScore)
         }
     }
-    console.log(bestPairing)
+    console.log('bestPairing', bestPairing)
     return await bestPairing
 }
 
 export const actions = {
     default: async (event): Promise<void> => {
-        console.log('asoidjaosidjsaoij')
-        getdbs().then((result1) => {
-            console.log('reached Z')
-            /*evalAI(result1['mentees'], result1['mentors'], result1['questions']).then((result2) => {
+        getDbData().then((dbData) => {
+            getQueries(dbData['mentees'], dbData['mentors'], dbData['questions']).then((queries) => {
                 callAIs(
-                    result2['queries'],
-                    result2['pairing'],
+                    queries,
                     'TODO',
-                    result2['mentees'],
-                    result2['mentors']
-                ).then((result3) => {*/
-            let json = {
-                'johnsmith@domain.com:chrisyx511@gmail.com': 2,
-                'marianostudent@mari.com:chrisyx511@gmail.com': 19,
-                'bill.gates@gmail.com:chrisyx511@gmail.com': 6,
-                'marianostudent@mari.com:justin.bax@icloud.com': 15,
-                'johnsmith@domain.com:justin.bax@icloud.com': 12,
-                'bill.gates@gmail.com:justin.bax@icloud.com': 13,
-                'marianostudent@mari.com:bobby12@yahoo.com': 7,
-                'johnsmith@domain.com:bobby12@yahoo.com': 10,
-                'bill.gates@gmail.com:bobby12@yahoo.com': 18
-            }
-            console.log('reached A')
-            heuristic(result1['mentees'], result1['mentors'], json).then(async (best) => {
-                console.log('reached B')
-                console.log(best)
-                const menteesCollection = await collection(db, 'mentees')
-                const mentorsCollection = await collection(db, 'mentors')
+                ).then((pairing) => {
+                    console.log('ai response:', pairing)
+                    heuristic(dbData['mentees'], dbData['mentors'], pairing).then(async (best) => {
+                        console.log('best', best)
 
-                for (let key: any of Object.entries(best)) {
-                    let mentorEmail = key[0]
-                    let menteeEmail = key[1]
-                    console.log('key', key)
-                    console.log('key[1', key[0])
-                    console.log('best[2', key[1])
+                        const menteesCollection = await collection(db, 'mentees')
+                        const mentorsCollection = await collection(db, 'mentors')
 
-                    const menteeQuery: Query = query(
-                        menteesCollection,
-                        where('email', '==', menteeEmail)
-                    )
-                    let menteeId: any = 0
-                    await getDocs(menteeQuery).then((result) => {
-                        menteeId = result.docs[0].id
+                        for (let key of Object.entries(best)) {
+                            let mentorEmail = key[0]
+                            let menteeEmail = key[1]
+
+                            const menteeQuery: Query = query(
+                                menteesCollection,
+                                where('email', '==', menteeEmail)
+                            )
+                            let menteeId: any = 0
+                            await getDocs(menteeQuery).then((docsFound) => {
+                                menteeId = docsFound.docs[0].id
+                            })
+                            let menteeRef = doc(db, 'mentees', menteeId)
+
+                            const mentorQuery: Query = query(
+                                mentorsCollection,
+                                where('email', '==', mentorEmail)
+                            )
+                            let mentorId: any = 0
+                            await getDocs(mentorQuery).then((docsFound) => {
+                                mentorId = docsFound.docs[0].id
+                            })
+                            let mentorRef = doc(db, 'mentors', mentorId)
+
+                            updateDoc(menteeRef, {
+                                mentor: mentorEmail
+                            })
+
+                            updateDoc(mentorRef, {
+                                mentees: [menteeEmail]
+                            })
+                        }
                     })
-                    let menteeRef = doc(db, 'mentees', menteeId)
-                    console.log('mentee', menteeId)
-
-                    const mentorQuery: Query = query(
-                        mentorsCollection,
-                        where('email', '==', mentorEmail)
-                    )
-                    let mentorId: any = 0
-                    await getDocs(mentorQuery).then((result) => {
-                        mentorId = result.docs[0].id
-                    })
-                    let mentorRef = doc(db, 'mentors', mentorId)
-                    console.log('mentor', mentorId)
-
-                    updateDoc(menteeRef, {
-                        mentor: mentorEmail
-                    })
-
-                    updateDoc(mentorRef, {
-                        mentees: [menteeEmail]
-                    })
-                }
+                })
             })
-        }) /*
-                
-                */
-        //heuristic(result['mentees'], result['mentors'], json)
-        //})
-        //})
+        })
     }
 } satisfies Actions
